@@ -1,0 +1,3 @@
+<?php
+
+// Application-specific initialization

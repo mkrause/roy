@@ -1,0 +1,11 @@
+# This is an example .htaccess file.
+
+<IfModule mod_rewrite.c>
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^$ public/ [passthrough,last]
+RewriteRule .* public/$0 [passthrough,last]
+</IfModule>
