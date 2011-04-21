@@ -13,7 +13,7 @@ spl_autoload_register(function($class_name) {
     }
 }, true, true);
 
-fSession::setPath(Roy::config('forecasting.paths.session'));
+fSession::setPath(Roy::config('app.paths.session'));
 fSession::setLength('2 hour');
 
 //===========================
@@ -24,7 +24,7 @@ require_once('thirdparty/php-activerecord/ActiveRecord.php');
 
 ActiveRecord\Config::initialize(function($cfg)
 {
-    $conn_string = Roy::config('example.db.connection_string');
+    $conn_string = Roy::config('app.db.connection_string');
     
     $model_dir = Path::concat(Roy::module('app'), 'classes/model');
     $cfg->set_model_directory($model_dir);

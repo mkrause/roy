@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?= html::encode(Example::title($this)) ?></title>
+    <title><?= html::encode(App::title($this)) ?></title>
     <meta charset="utf-8">
 </head>
 <body>

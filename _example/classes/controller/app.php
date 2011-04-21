@@ -23,7 +23,7 @@ class App_Controller extends Controller
         parent::before();
         
         $this->layout = new View('/layouts/default.php');
-        $this->layout->title = 'Forecasting';
+        $this->layout->title = Roy::config('app.longname');
         $this->layout->stylesheets = array();
         $this->layout->scripts = array();
         
