@@ -56,7 +56,9 @@ Roy manages a list of modules ordered by priority. In the case of a naming
 conflict, the class, config value, string, etc. in the higher-priority module
 will be used. The standard module list is `[app, roy]`, where the former
 takes priority over the latter. The `roy` core module will always have the
-least priority.
+least priority. This allows the application to overwrite parts of the
+framework such as classes or view files, without having to mess with the
+core `roy/` module.
 
 ## Autoloader
 
