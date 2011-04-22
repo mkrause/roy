@@ -1,5 +1,5 @@
-Roy PHP Framework v0.4
-Copyright (c) 2011 Maikel Krause (maikelkrause.com).
+Roy PHP Framework v0.4  
+Copyright (c) 2011 Maikel Krause (maikelkrause.com).  
 Licensed under the MIT license.
 
 Requires PHP 5.3+.
@@ -9,10 +9,11 @@ application, without the complexity of a more feature-rich framework. This
 framework is meant for projects that need a quick start and full flexibility.
 
 Roy aims to be:
-- Minimal (bring your own libraries)
-- Modular
-- Transparent
-- Easy to use
+
+* Minimal (bring your own libraries)
+* Modular
+* Transparent
+* Easy to use
 
 # Installation
 
