@@ -46,11 +46,11 @@ The framework is structured into separate modules, each with the same basic
 directory structure:
 
     my_module/
-        classes/        The autoloader loads classes from here.
+        classes/        Used by the autoloader to load class definitions.
         config/         Configuration key-value pairs.
         strings/        Localization strings.
         thirdparty/     Third-party libraries.
-        views/          The `View` class loads templates from here.
+        views/          Used by the View class to loads templates.
 
 Roy manages a list of modules ordered by priority. In the case of a naming
 conflict, the class, config value, string, etc. in the higher-priority module
@@ -66,7 +66,9 @@ PHP autoloader that, when called, will search for a class definition in the
 map class names to files as following:
 
     'MyClass' -> 'classes/myclass.php'
+    'Book_Model' -> 'classes/model/book.php'
     'Users_Controller' -> 'classes/controller/users.php'
+    'Users_Admin_Controller' -> 'classes/controller/admin/users.php'
 
 ## Configuration
 
