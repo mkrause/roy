@@ -1,13 +1,14 @@
 <?php
 /**
- * Front controller.
+ * Front controller. Feel free to customize this file.
  */
 
 // Report all errors.
 // 
-// Note: you will want to suppress errors in a production environment. If you
-// use Roy's built in error handling, errors will be handled gracefully in
-// production mode, so it's okay to leave error_reporting on high.
+// Note: you will want to suppress the display of errors in a production
+// environment. If you use Roy's built-in error handling, errors will be
+// handled gracefully in production mode, so it's okay to leave
+// error_reporting on high.
 error_reporting(E_ALL);
 
 // Location of the core Roy module
@@ -20,9 +21,11 @@ require_once $roy_path . '/classes/roy.php';
 
 // For performance, skip the autoloader for often-used classes.
 // Note: this means that these classes cannot be overridden by a
-// module anymore.
+// module anymore. If you want to override a built-in class,
+// comment out the corresponding line.
 require_once $roy_path . '/classes/controller.php';
 require_once $roy_path . '/classes/html.php';
+require_once $roy_path . '/classes/path.php';
 require_once $roy_path . '/classes/request.php';
 require_once $roy_path . '/classes/route.php';
 require_once $roy_path . '/classes/url.php';
@@ -37,7 +40,7 @@ Roy::init(function() use ($app_path) {
 });
 
 // Initialize the application
-include $app_path . '/init.php';
+include Path::concat(Roy::module('app'), 'init.php');
 
 // Dispatch to a controller and output (using PATH_INFO to route the request)
 $path = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
