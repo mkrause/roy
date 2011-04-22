@@ -78,7 +78,7 @@ Config files are stored in the `config/` directory of each module. Each
 config file returns an array with key-value pairs. For example, we might have
 the following config file:
 
-    *file: app/config/main.php*
+    file: app/config/main.php
     <?php
     return array(
         'foo' => 'bar',
