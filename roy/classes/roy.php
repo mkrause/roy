@@ -14,11 +14,9 @@ require_once 'path.php';
 /**
  * Short-hand function for Roy::string().
  */
-if (!defined('ROY_DONT_DEFINE_STR')) {
-    function str() {
-        $args = func_get_args();
-        return call_user_func_array('Roy::string', $args);
-    }
+function str() {
+    $args = func_get_args();
+    return call_user_func_array('Roy::string', $args);
 }
 
 /**
@@ -530,13 +528,15 @@ class Roy
     public static function _get_array_item($arr, $indices_in)
     {
         $item = $arr;
-        $indices = $indices_in; // Copy so as not to modify the argument
+        $indices = unserialize(serialize($indices_in)); // Hard copy
         
         // Drill down in to this array as specified by the indices
         while (count($indices) > 0) {
             $index = array_shift($indices);
             
-            if (!isset($item[$index])) {
+            // Note: don't use isset(), as it treats explicit null-values as
+            // not set
+            if (!array_key_exists($index, $item)) {
                 throw new NotFoundException("Item not found");
             }
             
