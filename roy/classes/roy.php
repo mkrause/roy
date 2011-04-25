@@ -491,8 +491,6 @@ class Roy
                     $exception);
             }
             
-            throw new Exception('boooo');
-            
             if (!headers_sent()) {
                 $roy_exception->headers();
             }
