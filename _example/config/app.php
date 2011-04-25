@@ -11,6 +11,6 @@ return array(
         'session' => Path::concat(Roy::module('app'), 'tmp/session'),
     ),
     'db' => array(
-        'connection_string' => 'mysql://XXX:XXX@localhost/XXX?port=XXX',
+        'connection_string' => null, //'mysql://[user]:[pass]@localhost/[db_name]',
     ),
 );

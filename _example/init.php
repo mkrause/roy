@@ -22,20 +22,22 @@ fSession::setLength('2 hour');
 
 require_once('thirdparty/php-activerecord/ActiveRecord.php');
 
-ActiveRecord\Config::initialize(function($cfg)
-{
-    $conn_string = Roy::config('app.db.connection_string');
-    
-    $model_dir = Path::concat(Roy::module('app'), 'classes/model');
-    $cfg->set_model_directory($model_dir);
-    $cfg->set_connections(array(
-        'development' => $conn_string,
-    ));
-    
-    // Use UTF8 as the connection's character set
-    $conn = ActiveRecord\ConnectionManager::get_connection();
-    $conn->query("SET NAMES utf8");
-    
-    //$cfg->set_logging(true);
-    //$cfg->set_logger(new ARLogger());
-});
+if (Roy::config('app.db.connection_string')) {
+    ActiveRecord\Config::initialize(function($cfg)
+    {
+        $conn_string = Roy::config('app.db.connection_string');
+        
+        $model_dir = Path::concat(Roy::module('app'), 'classes/model');
+        $cfg->set_model_directory($model_dir);
+        $cfg->set_connections(array(
+            'development' => $conn_string,
+        ));
+        
+        // Use UTF8 as the connection's character set
+        $conn = ActiveRecord\ConnectionManager::get_connection();
+        $conn->query("SET NAMES utf8");
+        
+        //$cfg->set_logging(true);
+        //$cfg->set_logger(new ARLogger());
+    });
+}
