@@ -18,7 +18,7 @@ return array(
     // Base URL. For example, '/myprojects/myapp'. Used to generate
     // domain-relative URLs.
     //
-    // Defaults to using $_SERVER['SCRIPT_NAME']; change this if
+    // Defaults to using dirname($_SERVER['SCRIPT_NAME']); change this if
     // you're using URL rewriting to alter the base url.
     'base_url' => null,
     

@@ -326,6 +326,11 @@ class Roy
     /**
      * Helper method. Map the given class name to a module-relative path where
      * the respective class definition might be found.
+     * 
+     * @param string class_name The name of the class for which we want a
+     *     definition file.
+     * @return The path of the respective class definition.
+     * @throws ProgrammerException
      */
     public static function class_name_to_path($class_name)
     {
@@ -364,6 +369,7 @@ class Roy
     /**
      * Attempt to load the class definition for the given class name.
      * 
+     * @param string class_name The name of the class to autoload.
      * @throws NotFoundException
      */
     public static function autoload($class_name)
@@ -388,6 +394,7 @@ class Roy
      * @param string message Error message.
      * @param string file Source file in which the error occured.
      * @param int line Line in $file on which the error occured.
+     * @return bool Whether or not to run the internal PHP error handler.
      */
     public static function handle_error($level, $message, $file, $line)
     {
@@ -413,6 +420,8 @@ class Roy
         // message if we're running in debug mode and error_reporting is on
         // for this error type
         
+        // Don't log or display error if error_reporting is off for this type
+        //XXX use seperate values for reporting level and logging level?
         if (!(error_reporting() & $level)) {
             return true;
         }
@@ -466,52 +475,65 @@ class Roy
     
     /**
      * Exception handler.
+     * 
+     * @param Exception exception The exception object to handle.
      */
     public static function handle_exception($exception)
     {
+        // Clear any buffered output so we can render a complete exception
+        // notification page
         self::_clear_buffered();
         
         try {
-            if (is_a($exception, 'RoyException')) {
-                if (!headers_sent()) {
-                    $exception->headers();
-                }
-                echo $exception->render();
-            } else {
-                $e = new RoyException('Unknown exception', $exception);
-                if (!headers_sent()) {
-                    $e->headers();
-                }
-                
-                echo $e->render();
+            $roy_exception = $exception;
+            if (!is_a($exception, 'RoyException')) {
+                $roy_exception = new RoyException('Unknown exception',
+                    $exception);
             }
-        } catch (Exception $e) {
-            // An exception was thrown while trying to handle the exception...
-            self::_clear_buffered();
-            echo $exception->getMessage();
             
-            if (self::mode() == self::MODE_DEBUG) {
-                echo "<br><b>Additionally, an error occurred while"
-                    . " handling the exception:</b><br>\n";
+            throw new Exception('boooo');
+            
+            if (!headers_sent()) {
+                $roy_exception->headers();
+            }
+            echo $roy_exception->render();
+        } catch (Exception $e) {
+            // Oh boy. An exception was thrown while trying to display
+            // the exception page...
+            self::_clear_buffered();
+            
+            if (self::mode() === self::MODE_DEBUG) {
+                echo "<p><b>An error occured while trying to display the"
+                    . " page:</b><br>";
+                echo "[" . get_class($exception) . "] ";
+                echo $exception->getMessage();
+                echo "</p>";
+                echo "<p><b>Additionally, an error occurred while"
+                    . " trying to display the error page:</b><br>\n";
+                echo "[" . get_class($e) . "] ";
                 echo $e->getMessage();
+                echo "</p>";
+            } else {
+                echo "An error occured while trying to display the page.";
             }
         }
         
-        // Finally, log exception!
+        // Log the exception
         try {
             $log_file = self::config('main.error_log_file');
         } catch (NotFoundException $e) {
             $log_file = false;
         }
         
-        if (!empty($log_file)) {
+        if ($log_file) {
             if (!file_exists($log_file)) {
                 touch($log_file);
             }
             
             $handle = fopen($log_file, 'a+');
             $datetime = date('Y-m-d H:i:s');
-            $log = "[$datetime]" . $exception->getMessage() . "\n"
+            $log = "[$datetime] Exception of type " . get_class($exception)
+                . ": " . $exception->getMessage() . "\n"
                 . $exception->getTraceAsString() . "\n";
             fwrite($handle, $log);
             fclose($handle);
@@ -523,6 +545,8 @@ class Roy
     /**
      * Return the base URL (domain-relative base, e.g. /my/project) for the
      * current application.
+     * 
+     * @return string The base URL.
      */
     public static function base_url()
     {
@@ -544,7 +568,7 @@ class Roy
     
     /**
      * Helper method: get the right item in an array specified
-     * by a array of indices.
+     * by an array of indices.
      * 
      * @param array config The array.
      * @param array indices Array of indices specifying the item.
@@ -597,7 +621,7 @@ class Roy
         foreach ($modules as $module) {
             $config_file = Path::concat($module, $config_path);
             if (file_exists($config_file)) {
-                $config_values = include($config_file);
+                $config_values = include $config_file;
                 try {
                     $config_value = self::_get_array_item($config_values,
                         $parts);
@@ -625,6 +649,12 @@ class Roy
     
     /**
      * Retrieve a string in the given language.
+     * 
+     * @param string key Key (e.g. "myapp.error-message") of the string.
+     * @param string lang Language tag for the language of the string.
+     * @param args Parameter values to fill in the string.
+     * @return The found string value.
+     * @throws NotFoundException
      */
     public static function _string_in_language($key, $lang, $args)
     {
@@ -649,7 +679,7 @@ class Roy
         }
         
         if ($found === false) {
-            throw new NotFoundException;
+            throw new NotFoundException('No such string in the given lang.');
         }
         
         return $found;
@@ -657,6 +687,11 @@ class Roy
     
     /**
      * Retrieve a language string.
+     * 
+     * @param string key Key (e.g. "myapp.error-message") of the string.
+     * @param [args...] Parameter values to fill in the string.
+     * @return The specified string value.
+     * @throws NotFoundException
      */
     public static function string($key)
     {
