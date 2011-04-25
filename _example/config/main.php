@@ -12,11 +12,12 @@ return array(
     
     // Path to file to which errors should be logged.
     // Set to false to turn off error logging.
-    'error_log_file' => false,
+    // E.g. Path::concat(Roy::module('app'), 'tmp/logs/errors.log')
+    'error_log_file' => Path::concat(Roy::module('app'), 'tmp/logs/errors.log'),
     
     // Base URL. For example, '/myprojects/myapp'. Used to generate
     // domain-relative URLs.
-    // 
+    //
     // Defaults to using $_SERVER['SCRIPT_NAME']; change this if
     // you're using URL rewriting to alter the base url.
     'base_url' => null,

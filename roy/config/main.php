@@ -12,6 +12,7 @@ return array(
     
     // Path to file to which errors should be logged.
     // Set to false to turn off error logging.
+    // E.g. Path::concat(Roy::module('app'), 'tmp/logs/errors.log')
     'error_log_file' => false,
     
     // Base URL. For example, '/myprojects/myapp'. Used to generate

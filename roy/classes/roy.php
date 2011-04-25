@@ -80,7 +80,9 @@ class Roy
         try {
             $mode = self::config('main.mode');
             self::set_mode($mode);
-        } catch (NotFoundException $e) {}
+        } catch (NotFoundException $e) {
+            // Leave mode as is
+        }
     }
     
     /**
@@ -180,6 +182,7 @@ class Roy
      * - Roy::MODE_DEBUG
      * 
      * @param string mode The mode.
+     * @throws ProgrammerException
      */
     public static function set_mode($mode)
     {
@@ -188,11 +191,15 @@ class Roy
             throw new ProgrammerException(str('roy.invalid-mode', $mode));
         }
         
+        /*
+        //XXX probably better to leave error_reporting as is and let the
+        // error handler decide whether or not to display it
         if ($mode === self::MODE_PRODUCTION) {
             error_reporting(0);
         } else {
             error_reporting(E_ALL);
         }
+        */
         
         self::$_mode = $mode;
     }
@@ -231,8 +238,8 @@ class Roy
      * Return the module with the specified key.
      * 
      * @param string key The module key.
-     * @throws NotFoundException
      * @return The path to the module with the given key.
+     * @throws NotFoundException
      */
     public static function module($key)
     {
@@ -324,7 +331,7 @@ class Roy
     {
         // If an app-defined callback is given, use that
         try {
-            $callback = Roy::config('callbacks.class_name_to_path');
+            $callback = self::config('callbacks.class_name_to_path');
         } catch (NotFoundException $e) {
             throw new ProgrammerException(str('roy.no-such-callback',
                 'callbacks.class_name_to_path'), $e);
@@ -376,19 +383,25 @@ class Roy
     
     /**
      * Error handler.
+     * 
+     * @param enum level Error level; one of E_NOTICE, E_WARNING, etc.
+     * @param string message Error message.
+     * @param string file Source file in which the error occured.
+     * @param int line Line in $file on which the error occured.
      */
     public static function handle_error($level, $message, $file, $line)
-    {    
+    {
         // Throw an exception for all (recoverable) fatal errors
         if ($level === E_USER_ERROR or $level === E_RECOVERABLE_ERROR) {
             $error_exception = new ErrorException($message, 0, $level, $file,
                 $line);
             
             // Due to a limitation in PHP, we can't throw an exception from
-            // a __toString method
+            // a __toString method, so we need to call the exception handler
+            // explicitly
             $trace = debug_backtrace();
-            if (isset($trace[2]['class']) and $trace[2]['function']
-                === '__toString') {
+            if (isset($trace[2]['class'])
+                    and $trace[2]['function'] === '__toString') {
                 self::handle_exception($error_exception);
                 return;
             }
@@ -396,26 +409,35 @@ class Roy
             throw $error_exception;
         }
         
-        // Non-fatal errors
+        // Log non-fatal errors and continue execution; also output the error
+        // message if we're running in debug mode and error_reporting is on
+        // for this error type
+        
+        if (!(error_reporting() & $level)) {
+            return true;
+        }
+        
+        // Reverse engineer the name of the error type from the value
+        // of $level
         $type = 'ERROR';
         if ($level === E_WARNING) {
             $type = 'E_WARNING';
-        } else if ($level === E_NOTICE) {
+        } elseif ($level === E_NOTICE) {
             $type = 'E_NOTICE';
         }
         
-        if (Roy::mode() === Roy::MODE_DEBUG) {
+        if (self::mode() === self::MODE_DEBUG) {
             echo "<b>$type [$level]</b> $message in $file on line"
                 . " $line.<br>\n";
         }
         
         try {
-            $log_file = Roy::config('main.error_log_file');
+            $log_file = self::config('main.error_log_file');
         } catch (NotFoundException $e) {
             $log_file = false;
         }
         
-        if (!empty($log_file)) {
+        if ($log_file) {
             if (!file_exists($log_file)) {
                 touch($log_file);
             }
@@ -477,7 +499,7 @@ class Roy
         
         // Finally, log exception!
         try {
-            $log_file = Roy::config('main.error_log_file');
+            $log_file = self::config('main.error_log_file');
         } catch (NotFoundException $e) {
             $log_file = false;
         }
@@ -507,7 +529,7 @@ class Roy
         $base = '';
         
         try {
-            $base = Path::normalize(Roy::config('main.base_url'));
+            $base = Path::normalize(self::config('main.base_url'));
             
             if (empty($base)) {
                 throw new NotFoundException('No base URL configured');
@@ -526,8 +548,8 @@ class Roy
      * 
      * @param array config The array.
      * @param array indices Array of indices specifying the item.
-     * @throws NotFoundException
      * @return The item.
+     * @throws NotFoundException
      */
     public static function _get_array_item($arr, $indices_in)
     {

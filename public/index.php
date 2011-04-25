@@ -6,8 +6,8 @@
 // Report all errors.
 // 
 // Note: you will want to suppress the display of errors in a production
-// environment. If you use Roy's built-in error handling, errors will be
-// handled gracefully in production mode, so it's okay to leave
+// environment. If you use Roy's built-in error handling, recoverable errors
+// will be handled gracefully in production mode, so it's okay to leave
 // error_reporting on high.
 error_reporting(E_ALL);
 
