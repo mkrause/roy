@@ -91,12 +91,8 @@ class Roy
         self::$_modules = array();
         self::$_mode = self::MODE_DEBUG;
         
-        if (self::autoload_enabled()) {
-            self::disable_autoload();
-        }
-        if (self::error_handling_enabled()) {
-            self::disable_error_handling();
-        }
+        self::disable_autoload();
+        self::disable_error_handling();
         
         self::$_autoload_enabled = false;
         self::$_error_handling_enabled = false;
@@ -107,8 +103,10 @@ class Roy
      */
     public static function enable_autoload()
     {
-        spl_autoload_register('Roy::autoload');
-        self::$_autoload_enabled = true;
+        if (!self::autoload_enabled()) {
+            spl_autoload_register('Roy::autoload');
+            self::$_autoload_enabled = true;
+        }
     }
     
     /**
@@ -116,8 +114,10 @@ class Roy
      */
     public static function disable_autoload()
     {
-        spl_autoload_unregister('Roy::autoload');
-        self::$_autoload_enabled = false;
+        if (self::autoload_enabled()) {
+            spl_autoload_unregister('Roy::autoload');
+            self::$_autoload_enabled = false;
+        }
     }
     
     /**
@@ -135,9 +135,11 @@ class Roy
      */
     public static function enable_error_handling()
     {
-        set_error_handler('Roy::handle_error', E_ALL);
-        set_exception_handler('Roy::handle_exception');
-        self::$_error_handling_enabled = true;
+        if (!self::error_handling_enabled()) {
+            set_error_handler('Roy::handle_error', E_ALL);
+            set_exception_handler('Roy::handle_exception');
+            self::$_error_handling_enabled = true;
+        }
     }
     
     /**
@@ -145,9 +147,11 @@ class Roy
      */
     public static function disable_error_handling()
     {
-        restore_error_handler();
-        restore_exception_handler();
-        self::$_error_handling_enabled = false;
+        if (self::error_handling_enabled()) {
+            restore_error_handler();
+            restore_exception_handler();
+            self::$_error_handling_enabled = false;
+        }
     }
     
     /**
