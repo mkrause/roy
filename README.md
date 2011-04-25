@@ -62,7 +62,7 @@ core `roy/` module.
 
 ## Autoloader
 
-If enabled (via `Roy::enable_autoload()` in index.php), Roy will set up an
+If enabled (via `Roy::enable_autoload()` in index.php), Roy will set up a
 PHP autoloader that, when called, will search for a class definition in the
 /classes directory of each module in priority order. Roy will, by default,
 map class names to files as following:
