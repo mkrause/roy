@@ -11,7 +11,7 @@
  */
 class Route
 {
-    protected $route = '';
+    public $_route = '';
     
     /**
      * Return the normalized form of the given route, according to the
@@ -64,9 +64,9 @@ class Route
     {
         if (is_a($route, 'Route')) {
             // Copy construct
-            $this->route = $route->get_route();
+            $this->_route = $route->get_route();
         } else {
-            $this->route = self::normalize($route);
+            $this->_route = self::normalize($route);
         }
     }
     
@@ -81,7 +81,7 @@ class Route
     /**
      * Split the given route string into its '/'-separated component segments.
      */
-    protected function _split()
+    public function _split()
     {
         $route = $this->get_route();
         if ($route === '/') {
@@ -101,7 +101,7 @@ class Route
     {
         // Note: this method can't be named just 'route()' because it would
         // conflict with PHP's old constructor naming convention.
-        return $this->route;
+        return $this->_route;
     }
     
     /**
@@ -132,9 +132,17 @@ class Route
     /**
      * Get the (normalized) array of user-specified reroutes.
      */
-    protected static function _get_reroutes()
+    public static function _get_reroutes()
     {
-        $reroutes = Roy::config('routes.routes', array());
+        $reroutes = array();
+        
+        // Combine routes config values of all modules
+        foreach (array_reverse(Roy::modules()) as $module_key => $module) {
+            $module_reroutes = Roy::config_from_module('routes.routes',
+                $module_key);
+            $reroutes = array_merge($reroutes, $module_reroutes);
+        }
+        
         $reroutes_normal = array();
         
         // Normalize all

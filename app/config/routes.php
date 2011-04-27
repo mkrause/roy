@@ -2,6 +2,6 @@
 
 return array(
     'routes' => array(
-        //'/' => '/home',
+        '/' => '/home',
     ),
 );

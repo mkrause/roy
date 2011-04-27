@@ -2,8 +2,8 @@
 
 return array(
     'routes' => array(
+        '/' => '/home',
         // Examples:
-        //'/' => '/home',
         //'/profile(/.*)?' => '/users/profile$1',
     ),
 );

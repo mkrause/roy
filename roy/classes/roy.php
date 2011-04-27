@@ -595,6 +595,49 @@ class Roy
     }
     
     /**
+     * Retrieve a config item from the given module.
+     * 
+     * @param string key The config key.
+     * @param string module_key The key of the module to search in.
+     * @return The config item.
+     * @throws NotFoundException
+     * @throws ProgrammerException
+     */
+    public static function config_from_module($key, $module_key)
+    {
+        $parts = explode('.', $key);
+        $file_name = array_shift($parts);
+        
+        $config_value = null;
+        
+        try {
+            $config_path = "config/{$file_name}.php";
+            $config_file = Path::concat(self::module($module_key),
+                $config_path);
+        } catch (NotFoundException $e) {
+            // Chain and re-throw
+            throw new ProgrammerException(str('roy.no-such-module',
+                $module_key), $e);
+        }
+        
+        if (!file_exists($config_file)) {
+            throw new NotFoundException(str('roy.config-item-not-found',
+                $key));
+        }
+        
+        $config_values = include $config_file;
+        try {
+            $config_value = self::_get_array_item($config_values, $parts);
+        } catch (NotFoundException $e) {
+            // Chain and re-throw
+            throw new NotFoundException(str('roy.config-item-not-found',
+                $key), $e);
+        }
+        
+        return $config_value;
+    }
+    
+    /**
      * Retrieve a config item, specified by a key like
      * "config_file.index1.index2", which refers to the item in config file
      * "config/config_file.php" with array index [index1][index2].
