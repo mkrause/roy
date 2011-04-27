@@ -40,6 +40,16 @@ version. All other directories generally won't need to updated.
 
 # User Guide
 
+Roy was written for a personal project because we wanted to use
+[Flourish](http://flourishlib.com)'s excellent functionality but with an
+(H)MVC architecture. The framework attempts to alleviate the programmer
+from having to worry about the very basics; error/exception handling, class
+autoloading, URL routing, etc.
+
+We believe that a collection of third-party libraries each focused on one
+specific task is better than a large, complex framework. Each library can
+then be swapped out at will if the need arises.
+
 ## Modules
 
 The framework is structured into separate modules, each with the same basic
