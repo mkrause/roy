@@ -138,8 +138,12 @@ class Route
         
         // Combine routes config values of all modules
         foreach (array_reverse(Roy::modules()) as $module_key => $module) {
-            $module_reroutes = Roy::config_from_module('routes.routes',
-                $module_key);
+            try {
+                $module_reroutes = Roy::config_from_module('routes.routes',
+                    $module_key);
+            } catch (NotFoundException $e) {
+                continue;
+            }
             $reroutes = array_merge($reroutes, $module_reroutes);
         }
         
