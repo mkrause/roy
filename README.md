@@ -15,6 +15,8 @@ The framework can provide an application with:
 
 ## Installation
 
+Requires PHP 5.3+.
+
 Download the latest source from GitHub:
 https://github.com/mkrause/roy
 
