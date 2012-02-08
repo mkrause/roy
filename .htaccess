@@ -1,5 +1,6 @@
 # This is an example .htaccess file.
 
+# Rewrite all requests to go through public/
 <IfModule mod_rewrite.c>
 RewriteEngine on
 

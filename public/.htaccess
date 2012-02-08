@@ -1,3 +1,6 @@
+# This is an example .htaccess file.
+
+# Get rid of index.php in URLs
 <IfModule mod_rewrite.c>
 RewriteEngine on
 
